@@ -18,7 +18,7 @@ try:
     import xlsxwriter
 except ImportError:
     subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
-    import xlsxwriter
+import xlsxwriter
 
 # Certifique-se de que o módulo plotly está instalado
 try:
