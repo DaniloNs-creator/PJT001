@@ -3,11 +3,24 @@ import pandas as pd
 import numpy as np
 from io import BytesIO
 import subprocess
-import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Atualizando o pip antes de qualquer outra instalação
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
+
+try:
+    import matplotlib
+except ImportError:
+    import subprocess
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'matplotlib'])
+    import matplotlib
+
+try:
+    import plotly.graph_objects as go
+except ImportError:
+    import subprocess
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'plotly'])
+    import plotly.graph_objects as go
 
 # Certifique-se de que o módulo seaborn está instalado
 try:
