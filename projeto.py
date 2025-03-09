@@ -8,7 +8,7 @@ import subprocess
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
 # Certifique-se de que o módulo xlsxwriter está instalado
-subprocess.check_call(["python", '-m', 'pip', 'install', 'altair'])
+subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
 
 # Certifique-se de que o módulo altair está instalado
 try:
