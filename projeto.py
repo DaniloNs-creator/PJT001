@@ -3,7 +3,13 @@ import pandas as pd
 import numpy as np
 from io import BytesIO
 
-import subprocess
+# Certifique-se de que o módulo subprocess está instalado
+try:
+    import subprocess
+except ImportError:
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'subprocess'])
+    import subprocess
+
 # Atualizando o pip antes de qualquer outra instalação
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
@@ -97,12 +103,6 @@ else:
             for item, conteudo in perguntas_hierarquicas.items():
                 with st.expander(f"{item} - {conteudo['titulo']}"):  # Bloco expansível para cada item
                     for subitem, subpergunta in conteudo["subitens"].items():
-                        respostas[subitem] = st.number_input(f"{subitem} - {subpergunta}", min_value=0, max_value=5, step=1)
-            # Botão para enviar os dados e gerar o gráfico
-            if st.button("Enviar Dados e Gerar Gráfico"):
-                st.write(f"Obrigado, {st.session_state.nome}!")
-                st.write("Respostas enviadas com sucesso!")
-                # Calculando os valores em porcentagem para o gráfico de radar
                 categorias = []
                 valores = []
                 for item, conteudo in perguntas_hierarquicas.items():
