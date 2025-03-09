@@ -9,7 +9,13 @@ subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
 # Certifique-se de que o módulo xlsxwriter está instalado
 subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
-import xlsxwriter
+
+
+
+# Certifique-se de que o módulo plotly está instalado
+subprocess.check_call(["python", '-m', 'pip', 'install', 'matplotlib'])
+import matplotlib
+
 
 # Certifique-se de que o módulo plotly está instalado
 subprocess.check_call(["python", '-m', 'pip', 'install', 'plotly'])
