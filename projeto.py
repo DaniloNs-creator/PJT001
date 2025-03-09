@@ -7,13 +7,11 @@ import subprocess  # Importando diretamente, pois faz parte da biblioteca padrã
 # Atualizando o pip antes de qualquer outra instalação
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
-subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
-
 # Certifique-se de que o módulo xlsxwriter está instalado
 try:
     import xlsxwriter
 except ModuleNotFoundError as e:
-    st.error(f"Erro ao importar xlsxwriter: {e}")
+    st.error(f"Erro ao importar xlsxwriter: {e.name}")
     subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
     import xlsxwriter
 
