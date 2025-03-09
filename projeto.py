@@ -2,21 +2,21 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from io import BytesIO
-import subprocess
-
+import subprocess  # Importando diretamente, pois faz parte da biblioteca padrão
 
 # Atualizando o pip antes de qualquer outra instalação
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
 # Certifique-se de que o módulo xlsxwriter está instalado
-subprocess.check_call(["python", '-m', 'pip', 'install', 'altair'])
+subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
+import xlsxwriter
 
-# Certifique-se de que o módulo altair está instalado
+# Certifique-se de que o módulo plotly está instalado
 try:
-    import altair as alt
+    import plotly.graph_objects as go
 except ModuleNotFoundError:
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'altair'])
-    import altair as alt
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'plotly'])
+    import plotly.graph_objects as go
 
 # Função para exportar os dados para um arquivo Excel, incluindo os enunciados
 def exportar_para_excel_completo(respostas, perguntas_hierarquicas, categorias, valores):
@@ -35,6 +35,10 @@ def exportar_para_excel_completo(respostas, perguntas_hierarquicas, categorias, 
         df_respostas.to_excel(writer, index=False, sheet_name='Respostas')
         # Salvando os dados do gráfico em outra aba
         df_grafico.to_excel(writer, index=False, sheet_name='Gráfico')
+        # Adicionando a imagem do gráfico ao Excel
+        workbook = writer.book
+        worksheet = writer.sheets['Gráfico']
+        # worksheet.insert_image('E2', 'grafico.png', {'image_data': img_data}) # Removido, pois img_data não foi definido
     return output.getvalue()
 
 # Variável de controle para verificar se o usuário já preencheu a tela inicial
@@ -110,22 +114,22 @@ else:
                     valores += valores[:1]  # Fechando o gráfico
                     angulos = np.linspace(0, 2 * np.pi, len(categorias), endpoint=False).tolist()
                     angulos += angulos[:1]  # Fechando o gráfico
-                    # Criando o gráfico de radar usando Altair
-                    df_radar = pd.DataFrame({
-                        'Categoria': categorias + [categorias[0]],
-                        'Valor': valores,
-                        'Angulo': angulos
-                    })
-                    chart = alt.Chart(df_radar).mark_line().encode(
-                        x=alt.X('Angulo:Q', axis=None),
-                        y=alt.Y('Valor:Q', scale=alt.Scale(domain=[0, 100])),
-                        color=alt.value('blue'),
-                        tooltip=['Categoria', 'Valor']
-                    ).project(
-                        type='radial',
-                        rotate=0
+                    # Criando o gráfico usando Streamlit
+                    fig = go.Figure()
+                    fig.add_trace(go.Scatterpolar(
+                        r=valores,
+                        theta=categorias,
+                        fill='toself'
+                    ))
+                    fig.update_layout(
+                        polar=dict(
+                            radialaxis=dict(
+                                visible=True,
+                                range=[0, 100]
+                            )),
+                        showlegend=False
                     )
-                    st.altair_chart(chart, use_container_width=True)
+                    st.plotly_chart(fig)
                     # Gerando o arquivo Excel para download
                     excel_data = exportar_para_excel_completo(respostas, perguntas_hierarquicas, categorias, valores)
                     st.download_button(
