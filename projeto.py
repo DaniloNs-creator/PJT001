@@ -2,22 +2,22 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from io import BytesIO
-import subprocess  # Importando diretamente, pois faz parte da biblioteca padrão
-
-# Atualizando o pip antes de qualquer outra instalação
+import subprocess
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
 # Certifique-se de que o módulo xlsxwriter está instalado
 try:
-    import xlsxwriter
+    import xlsxwriter 
 except ImportError:
+
     subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
-import xlsxwriter
+    import xlsxwriter
 
 # Certifique-se de que o módulo plotly está instalado
 try:
     import plotly.graph_objects as go
 except ImportError:
+    import subprocess
     subprocess.check_call(["python", '-m', 'pip', 'install', 'plotly'])
     import plotly.graph_objects as go
 
