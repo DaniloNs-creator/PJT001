@@ -3,17 +3,18 @@ import pandas as pd
 import numpy as np
 from io import BytesIO
 import subprocess
+import altair as alt
 
 # Atualizando o pip antes de qualquer outra instalação
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
-# Certifique-se de que o módulo plotly está instalado
+# Certifique-se de que o módulo altair está instalado
 try:
-    import plotly.graph_objects as go
+    import altair as alt
 except ImportError:
     import subprocess
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'plotly'])
-    import plotly.graph_objects as go
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'altair'])
+    import altair as alt
 
 # Função para exportar os dados para um arquivo Excel, incluindo os enunciados
 def exportar_para_excel_completo(respostas, perguntas_hierarquicas, categorias, valores):
@@ -105,27 +106,29 @@ else:
                         valor_percentual = (soma_respostas / (num_perguntas * 5)) * 100
                         categorias.append(conteudo["titulo"])
                         valores.append(valor_percentual)
-                # Configurando o gráfico de radar
+                # Configurando o gráfico de radar com Altair
                 if categorias:
-                    valores += valores[:1]  # Fechando o gráfico
-                    angulos = np.linspace(0, 2 * np.pi, len(categorias), endpoint=False).tolist()
-                    angulos += angulos[:1]  # Fechando o gráfico
-                    # Criando o gráfico usando Streamlit
-                    fig = go.Figure()
-                    fig.add_trace(go.Scatterpolar(
-                        r=valores,
-                        theta=categorias,
-                        fill='toself'
-                    ))
-                    fig.update_layout(
-                        polar=dict(
-                            radialaxis=dict(
-                                visible=True,
-                                range=[0, 100]
-                            )),
-                        showlegend=False
+                    # Fechando o gráfico
+                    categorias += categorias[:1]
+                    valores += valores[:1]
+                    # Criando um DataFrame para o gráfico
+                    df_radar = pd.DataFrame({
+                        'Categoria': categorias,
+                        'Porcentagem': valores,
+                        'Angulo': np.linspace(0, 2 * np.pi, len(categorias), endpoint=False).tolist()
+                    })
+                    # Criando o gráfico de radar com Altair
+                    chart = alt.Chart(df_radar).mark_line(opacity=0.5, strokeWidth=2).encode(
+                        x=alt.X('Categoria:N', axis=None),  # Remove o eixo X
+                        y=alt.Y('Porcentagem:Q', scale=alt.Scale(domain=[0, 100])),
+                        color=alt.value('blue'),
+                        tooltip=['Categoria', 'Porcentagem']
+                    ).properties(
+                        width=500,
+                        height=500
                     )
-                    st.plotly_chart(fig)
+                    # Exibindo o gráfico no Streamlit
+                    st.altair_chart(chart, use_container_width=True)
                     # Gerando o arquivo Excel para download
                     excel_data = exportar_para_excel_completo(respostas, perguntas_hierarquicas, categorias, valores)
                     st.download_button(
