@@ -2,33 +2,28 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from io import BytesIO
-import subprocess
-
+import subprocess  # Importando diretamente, pois faz parte da biblioteca padrão
 
 # Atualizando o pip antes de qualquer outra instalação
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
-try:
-    import matplotlib
-except ImportError:
-    import subprocess
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'matplotlib'])
-    import matplotlib
+# Certifique-se de que o módulo xlsxwriter está instalado
+subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
+import xlsxwriter
 
+# Certifique-se de que o módulo plotly está instalado
 try:
     import plotly.graph_objects as go
-except ImportError:
-    import subprocess
+except ModuleNotFoundError:
     subprocess.check_call(["python", '-m', 'pip', 'install', 'plotly'])
     import plotly.graph_objects as go
 
-# Certifique-se de que o módulo seaborn está instalado
+# Certifique-se de que o módulo matplotlib está instalado
 try:
-    import seaborn as sns
-except ImportError:
-    import subprocess
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'seaborn'])
-    import seaborn as sns
+    import matplotlib
+except ModuleNotFoundError:
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'matplotlib'])
+    import matplotlib
 
 # Função para exportar os dados para um arquivo Excel, incluindo os enunciados
 def exportar_para_excel_completo(respostas, perguntas_hierarquicas, categorias, valores):
@@ -38,49 +33,20 @@ def exportar_para_excel_completo(respostas, perguntas_hierarquicas, categorias, 
         for subitem, subpergunta in conteudo["subitens"].items():
             linhas.append({"Pergunta": subpergunta, "Resposta": respostas[subitem]})
     df_respostas = pd.DataFrame(linhas)
-    
     # Criando um DataFrame com os valores do gráfico
     df_grafico = pd.DataFrame({'Categoria': categorias, 'Porcentagem': valores[:-1]})  # Removendo o valor duplicado do fechamento do gráfico
-    
     # Salvando ambos em um arquivo Excel
     output = BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         # Salvando as respostas em uma aba
         df_respostas.to_excel(writer, index=False, sheet_name='Respostas')
         # Salvando os dados do gráfico em outra aba
         df_grafico.to_excel(writer, index=False, sheet_name='Gráfico')
-    
+        # Adicionando a imagem do gráfico ao Excel
+        workbook = writer.book
+        worksheet = writer.sheets['Gráfico']
+        # worksheet.insert_image('E2', 'grafico.png', {'image_data': img_data}) # Removido, pois img_data não foi definido
     return output.getvalue()
-
-# Função para criar um gráfico de radar usando matplotlib e seaborn
-def criar_grafico_radar(categorias, valores):
-    # Fechando o gráfico
-    valores += valores[:1]
-    angulos = np.linspace(0, 2 * np.pi, len(categorias), endpoint=False).tolist()
-    angulos += angulos[:1]
-    
-    # Configurando o gráfico
-    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-    
-    # Plotando os dados
-    ax.plot(angulos, valores, linewidth=2, linestyle='solid', label='Maturidade')
-    ax.fill(angulos, valores, 'b', alpha=0.1)
-    
-    # Adicionando os rótulos das categorias
-    ax.set_theta_offset(np.pi / 2)
-    ax.set_theta_direction(-1)
-    ax.set_thetagrids(np.degrees(angulos[:-1]), categorias)
-    
-    # Configurando o eixo radial
-    ax.set_rlabel_position(0)
-    plt.yticks([20, 40, 60, 80, 100], ["20%", "40%", "60%", "80%", "100%"], color="gray", size=10)
-    plt.ylim(0, 100)
-    
-    # Melhorando a estética com seaborn
-    sns.set_style("whitegrid")
-    plt.title("Gráfico de Radar - Maturidade de Compliance e Processos", size=15, y=1.1)
-    
-    return fig
 
 # Variável de controle para verificar se o usuário já preencheu a tela inicial
 if "formulario_preenchido" not in st.session_state:
@@ -152,8 +118,25 @@ else:
                         valores.append(valor_percentual)
                 # Configurando o gráfico de radar
                 if categorias:
-                    fig = criar_grafico_radar(categorias, valores)
-                    st.pyplot(fig)
+                    valores += valores[:1]  # Fechando o gráfico
+                    angulos = np.linspace(0, 2 * np.pi, len(categorias), endpoint=False).tolist()
+                    angulos += angulos[:1]  # Fechando o gráfico
+                    # Criando o gráfico usando Streamlit
+                    fig = go.Figure()
+                    fig.add_trace(go.Scatterpolar(
+                        r=valores,
+                        theta=categorias,
+                        fill='toself'
+                    ))
+                    fig.update_layout(
+                        polar=dict(
+                            radialaxis=dict(
+                                visible=True,
+                                range=[0, 100]
+                            )),
+                        showlegend=False
+                    )
+                    st.plotly_chart(fig)
                     # Gerando o arquivo Excel para download
                     excel_data = exportar_para_excel_completo(respostas, perguntas_hierarquicas, categorias, valores)
                     st.download_button(
