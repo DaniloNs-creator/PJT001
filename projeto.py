@@ -3,14 +3,6 @@ import pandas as pd
 import numpy as np
 from io import BytesIO
 
-# Certifique-se de que o módulo xlsxwriter está instalado
-try:
-    import xlsxwriter
-except ImportError:
-    import subprocess
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
-    import xlsxwriter
-
 # Certifique-se de que o módulo plotly está instalado
 try:
     import plotly.graph_objects as go
@@ -27,19 +19,18 @@ def exportar_para_excel_completo(respostas, perguntas_hierarquicas, categorias, 
         for subitem, subpergunta in conteudo["subitens"].items():
             linhas.append({"Pergunta": subpergunta, "Resposta": respostas[subitem]})
     df_respostas = pd.DataFrame(linhas)
+    
     # Criando um DataFrame com os valores do gráfico
     df_grafico = pd.DataFrame({'Categoria': categorias, 'Porcentagem': valores[:-1]})  # Removendo o valor duplicado do fechamento do gráfico
+    
     # Salvando ambos em um arquivo Excel
     output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
         # Salvando as respostas em uma aba
         df_respostas.to_excel(writer, index=False, sheet_name='Respostas')
         # Salvando os dados do gráfico em outra aba
         df_grafico.to_excel(writer, index=False, sheet_name='Gráfico')
-        # Adicionando a imagem do gráfico ao Excel
-        workbook = writer.book
-        worksheet = writer.sheets['Gráfico']
-        # worksheet.insert_image('E2', 'grafico.png', {'image_data': img_data}) # Removido, pois img_data não foi definido
+    
     return output.getvalue()
 
 # Variável de controle para verificar se o usuário já preencheu a tela inicial
