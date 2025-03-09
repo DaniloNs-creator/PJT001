@@ -7,13 +7,10 @@ import subprocess
 # Atualizando o pip antes de qualquer outra instalação
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
-subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
-
 # Certifique-se de que o módulo xlsxwriter está instalado
 try:
     import xlsxwriter
 except ImportError:
-    import subprocess
     subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
     import xlsxwriter
 
@@ -21,7 +18,6 @@ except ImportError:
 try:
     import plotly.graph_objects as go
 except ImportError:
-    import subprocess
     subprocess.check_call(["python", '-m', 'pip', 'install', 'plotly'])
     import plotly.graph_objects as go
 
