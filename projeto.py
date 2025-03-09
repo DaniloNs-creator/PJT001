@@ -2,7 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from io import BytesIO
-import xlsxwriter  
+
+# Certifique-se de que o módulo xlsxwriter está instalado
+try:
+    import xlsxwriter
+except ImportError:
+    import subprocess
+    subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
+    import xlsxwriter
 
 # Certifique-se de que o módulo plotly está instalado
 try:
