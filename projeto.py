@@ -10,7 +10,8 @@ subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 # Certifique-se de que o módulo xlsxwriter está instalado
 try:
     import xlsxwriter
-except ModuleNotFoundError:
+except ModuleNotFoundError as e:
+    st.error(f"Erro ao importar xlsxwriter: {e}")
     subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
     import xlsxwriter
 
@@ -150,4 +151,3 @@ else:
                     )
     except FileNotFoundError:
         st.error(f"O arquivo {caminho_arquivo} não foi encontrado.")
-        
