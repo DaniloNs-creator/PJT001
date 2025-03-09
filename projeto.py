@@ -9,14 +9,11 @@ subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
 # Certifique-se de que o módulo xlsxwriter está instalado
 subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
-
+import xlsxwriter
 
 # Certifique-se de que o módulo plotly está instalado
-try:
-    import plotly.graph_objects as go
-except ImportError:
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'plotly'])
-    import plotly.graph_objects as go
+subprocess.check_call(["python", '-m', 'pip', 'install', 'plotly'])
+import plotly.graph_objects as go
 
 # Função para exportar os dados para um arquivo Excel, incluindo os enunciados
 def exportar_para_excel_completo(respostas, perguntas_hierarquicas, categorias, valores):
