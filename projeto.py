@@ -3,6 +3,12 @@ import pandas as pd
 import numpy as np
 from io import BytesIO
 
+import subprocess
+# Atualizando o pip antes de qualquer outra instalação
+subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
+
+subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
+
 # Certifique-se de que o módulo xlsxwriter está instalado
 try:
     import xlsxwriter
