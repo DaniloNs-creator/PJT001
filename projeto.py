@@ -103,6 +103,12 @@ else:
             for item, conteudo in perguntas_hierarquicas.items():
                 with st.expander(f"{item} - {conteudo['titulo']}"):  # Bloco expansível para cada item
                     for subitem, subpergunta in conteudo["subitens"].items():
+                        respostas[subitem] = st.number_input(f"{subitem} - {subpergunta}", min_value=0, max_value=5, step=1)
+            # Botão para enviar os dados e gerar o gráfico
+            if st.button("Enviar Dados e Gerar Gráfico"):
+                st.write(f"Obrigado, {st.session_state.nome}!")
+                st.write("Respostas enviadas com sucesso!")
+                # Calculando os valores em porcentagem para o gráfico de radar
                 categorias = []
                 valores = []
                 for item, conteudo in perguntas_hierarquicas.items():
