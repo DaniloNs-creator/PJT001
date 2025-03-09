@@ -2,13 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from io import BytesIO
-
-# Certifique-se de que o módulo subprocess está instalado
-try:
-    import subprocess
-except ImportError:
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'subprocess'])
-    import subprocess
+import subprocess  # Importando diretamente, pois faz parte da biblioteca padrão
 
 # Atualizando o pip antes de qualquer outra instalação
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
