@@ -8,12 +8,8 @@ import subprocess  # Importando diretamente, pois faz parte da biblioteca padrã
 subprocess.check_call(["python", '-m', 'pip', 'install', '--upgrade', 'pip'])
 
 # Certifique-se de que o módulo xlsxwriter está instalado
-try:
-    import xlsxwriter
-except ModuleNotFoundError as e:
-    st.error(f"Erro ao importar xlsxwriter: {e.name}")
-    subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
-    import xlsxwriter
+subprocess.check_call(["python", '-m', 'pip', 'install', 'xlsxwriter'])
+import xlsxwriter
 
 # Certifique-se de que o módulo plotly está instalado
 try:
